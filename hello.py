@@ -18,7 +18,7 @@ def index():
 @app.route('/user/<name>')
 @app.route('/user/<name>/<prontuario>')
 @app.route('/user/<name>/<prontuario>/<instituicao>')
-def user(name, prontuario='PT3036413', instituicao='IFSP'):
+def user(name, prontuario='PT3035999', instituicao='IFSP Pirituba'):
     return render_template('id.html', name=name, prontuario=prontuario, instituicao=instituicao)
 
 # REQUISIÇÃO DE CONTEXTO
