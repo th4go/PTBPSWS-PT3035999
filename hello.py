@@ -39,23 +39,6 @@ def contextorequisicao(name):
     return render_template('contexto.html', name=name, navegador=navegador, ip_cliente=ip_cliente, host_app=host_app)
 
 # FORMULÁRIO
-@app.route('/', methods=['GET', 'POST'])
-def index():
-  name = None
-  form = NameForm()
-  if form.validate_on_submit():
-    name = form.name.data
-    form.name.data = ''
-  return render_template('index.html', form=form, name=name)
-
-from flask import Flask, render_template, session, redirect, url_for
-@app.route('/', methods=['GET', 'POST'])
-def index():
-  form = NameForm()
-  if form.validate_on_submit():
-    session['name'] = form.name.data
-    return redirect(url_for('index'))
-  return render_template('index.html', form=form, name=session.get('name'))
 
 from flask import Flask, render_template, session, redirect, url_for, flash
 @app.route('/', methods=['GET', 'POST'])
@@ -68,3 +51,4 @@ def index():
     session['name'] = form.name.data
     return redirect(url_for('index'))
   return render_template('index.html', form = form, name = session.get('name'))
+
