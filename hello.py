@@ -18,11 +18,6 @@ app.config['SECRET_KEY'] = 'piercetheveil'  # Chave secreta para segurança
 bootstrap = Bootstrap(app)
 moment = Moment(app)
 
-# RAÍZ
-@app.route('/')
-def index():
-    return render_template('index.html', current_time = datetime.utcnow())
-
 # IDENTIFICAÇÃO
 @app.route('/user/<name>')
 @app.route('/user/<name>/<prontuario>')
