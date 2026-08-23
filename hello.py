@@ -7,7 +7,7 @@ from wtforms import StringField, PasswordField, SelectField, SubmitField
 from wtforms.validators import DataRequired
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'you-will-never-guess'
+app.config['SECRET_KEY'] = 'YOU_WILL_NEVER_GUESS'
 
 bootstrap = Bootstrap(app)
 moment = Moment(app)
@@ -31,17 +31,14 @@ class LoginForm(FlaskForm):
 def index():
     form = NameForm()
     if form.validate_on_submit():
-        old_name = session.get('name')
-        if old_name is not None and old_name != form.name.data:
-            flash('Looks like you have changed your name!')
         session['name'] = form.name.data
         session['surname'] = form.surname.data
         session['institution'] = form.institution.data
         session['discipline'] = form.discipline.data
         return redirect(url_for('index'))
 
-    # Obtém o IP remoto real (mesmo atrás do proxy do PythonAnywhere)
-    remote_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+    # Pega o IP real, evitando que fique "None"
+    remote_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
     host = request.host
 
     return render_template(
@@ -56,15 +53,12 @@ def index():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        username = form.username.data
-        return render_template(
-            'login_response.html',
-            username=username,
-            current_time=datetime.utcnow()
-        )
+        session['username'] = form.username.data
+        return redirect(url_for('login_response'))
         
-    return render_template(
-        'login.html',
-        form=form,
-        current_time=datetime.utcnow()
-    )
+    return render_template('login.html', form=form, current_time=datetime.utcnow())
+
+@app.route('/login_response')
+def login_response():
+    username = session.get('username')
+    return render_template('login-response.html', username=username, current_time=datetime.utcnow())

@@ -2,22 +2,22 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block page_content %}
-<div class="page-header" style="border-bottom: 1px solid #eee; margin-bottom: 20px;">
-    <h1>Olá, {% if session.get('name') %}{{ session.get('name') }}{% else %}Estranho{% endif %}!</h1>
-    <h2>A sua Insituição de ensino é {{ session.get('institution') }}</h2>
-    <h2>Está cursando a disciplina de {{ session.get('discipline') }}</h2>
+<div class="page-header" style="border-bottom: 1px solid #eee; margin-top: 20px; padding-bottom: 15px;">
+    <h1>
+        Olá, {% if session.get('name') %}{{ session.get('name') }} {{ session.get('surname', '') }}{% else %}Estranho{% endif %}!
+    </h1>
+    <h2>A sua Insituição de ensino é {% if session.get('institution') %}{{ session.get('institution') }}{% else %}None{% endif %}</h2>
+    <h2>Está cursando a disciplina de {% if session.get('discipline') %}{{ session.get('discipline') }}{% endif %}</h2>
     <br>
-    <p>O IP do computador remoto é: {{ remote_ip }}</p>
-    <p>O host da aplicação é: {{ host }}</p>
+    <p>O IP do computador remoto é: {% if remote_ip %}{{ remote_ip }}{% else %}None{% endif %}</p>
+    <p>O host da aplicação é: {% if host %}{{ host }}{% else %}None{% endif %}</p>
 </div>
 
-<div class="row">
-    <div class="col-md-6">
-        {{ wtf.quick_form(form) }}
-    </div>
+<div>
+    {{ wtf.quick_form(form) }}
 </div>
 
-<div style="margin-top: 30px;">
+<div style="margin-top: 30px; margin-bottom: 40px;">
     <p>The local date and time is {{ moment(current_time).format('LLLL') }}.</p>
     <p>That was {{ moment(current_time).fromNow() }}.</p>
 </div>
