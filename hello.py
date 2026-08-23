@@ -22,7 +22,7 @@ class NameForm(FlaskForm):
     institution = StringField('Informe a sua Insituição de ensino:', validators=[DataRequired()])
     discipline = SelectField(
         'Informe a sua disciplina:',
-        choices=[('DSWA5', 'DSWA5'), ('GPSA5', 'GPSA5'), ('IHCA5', 'IHCA5')]
+        choices=[('DSWA5', 'DSWA5'), ('DWBA4', 'DWBA4'), ('Gestão de Projetos', 'Gestão de Projetos')]
     )
     submit = SubmitField('Submit')
 
