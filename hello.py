@@ -7,10 +7,14 @@ from wtforms import StringField, PasswordField, SelectField, SubmitField
 from wtforms.validators import DataRequired
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'YOU_WILL_NEVER_GUESS'
+app.config['SECRET_KEY'] = 'YOU_WILL_NEVER_GUESS_THIS_SECRET_KEY'
 
 bootstrap = Bootstrap(app)
 moment = Moment(app)
+
+@app.context_processor
+def inject_current_time():
+    return dict(current_time=datetime.utcnow())
 
 class NameForm(FlaskForm):
     name = StringField('Informe o seu nome', validators=[DataRequired()])
@@ -18,7 +22,7 @@ class NameForm(FlaskForm):
     institution = StringField('Informe a sua Insituição de ensino:', validators=[DataRequired()])
     discipline = SelectField(
         'Informe a sua disciplina:',
-        choices=[('DSWA5', 'DSWA5'), ('DWBA4', 'DWBA4'), ('Gestão de Projetos', 'Gestão de Projetos')]
+        choices=[('DSWA5', 'DSWA5'), ('GPSA5', 'GPSA5'), ('IHCA5', 'IHCA5')]
     )
     submit = SubmitField('Submit')
 
@@ -35,19 +39,12 @@ def index():
         session['surname'] = form.surname.data
         session['institution'] = form.institution.data
         session['discipline'] = form.discipline.data
+        
+        session['remote_ip'] = request.headers.get('X-Forwarded-For', request.remote_addr)
+        session['host'] = request.host
         return redirect(url_for('index'))
 
-    # Pega o IP real, evitando que fique "None"
-    remote_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
-    host = request.host
-
-    return render_template(
-        'index.html',
-        form=form,
-        current_time=datetime.utcnow(),
-        remote_ip=remote_ip,
-        host=host
-    )
+    return render_template('index.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -56,9 +53,9 @@ def login():
         session['username'] = form.username.data
         return redirect(url_for('login_response'))
         
-    return render_template('login.html', form=form, current_time=datetime.utcnow())
+    return render_template('login.html', form=form)
 
 @app.route('/login_response')
 def login_response():
     username = session.get('username')
-    return render_template('login-response.html', username=username, current_time=datetime.utcnow())
+    return render_template('login_response.html', username=username)
