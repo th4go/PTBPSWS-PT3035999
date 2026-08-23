@@ -1,6 +1,6 @@
 {% extends "bootstrap/base.html" %}
 
-{% block title %}Flasky{% endblock %}
+{% block title %}Avaliação contínua: Aula 050.B{% endblock %}
 
 {% block navbar %}
 <div class="navbar navbar-inverse" role="navigation">
@@ -12,11 +12,12 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">Flasky</a>
+            <a class="navbar-brand" href="/">Avaliação contínua: <strong>Aula 050.B</strong></a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/">Home</a></li>
+                <li><a href="/login">Login</a></li>
             </ul>
         </div>
     </div>
@@ -34,4 +35,9 @@
 
     {% block page_content %}{% endblock %}
 </div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
 {% endblock %}
