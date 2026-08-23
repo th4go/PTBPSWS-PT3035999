@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block page_content %}
-<div class="row" style="margin-top: 30px;">
-    <div class="col-md-5 col-sm-7 col-xs-12">
+<div class="row" style="margin-top: 40px;">
+    <div class="col-md-4 col-md-offset-4">
         <div class="panel panel-default" style="padding: 25px; border-radius: 4px; border: 1px solid #e3e3e3;">
             <h2 style="margin-top: 0; margin-bottom: 20px;">Login:</h2>
             <form method="POST" action="/login">
@@ -21,8 +21,10 @@
     </div>
 </div>
 
-<div style="margin-top: 40px; margin-bottom: 30px;">
-    <p>The local date and time is {{ moment(current_time).format('LLLL') }}.</p>
-    <p>That was {{ moment(current_time).fromNow() }}.</p>
+<div class="row" style="margin-top: 20px; margin-bottom: 30px;">
+    <div class="col-md-12">
+        <p>The local date and time is {{ moment(current_time).format('LLLL') }}.</p>
+        <p>That was {{ moment(current_time).fromNow() }}.</p>
+    </div>
 </div>
 {% endblock %}
