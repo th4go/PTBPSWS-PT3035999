@@ -7,7 +7,7 @@ from wtforms import StringField, PasswordField, SelectField, SubmitField
 from wtforms.validators import DataRequired
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'uma-chave-secreta-forte-aqui'
+app.config['SECRET_KEY'] = 'you-will-never-guess'
 
 bootstrap = Bootstrap(app)
 moment = Moment(app)
@@ -18,7 +18,7 @@ class NameForm(FlaskForm):
     institution = StringField('Informe a sua Insituição de ensino:', validators=[DataRequired()])
     discipline = SelectField(
         'Informe a sua disciplina:',
-        choices=[('DSWA5', 'DSWA5'), ('GPSA5', 'GPSA5'), ('IHCA5', 'IHCA5')]
+        choices=[('DSWA5', 'DSWA5'), ('DWBA4', 'DWBA4'), ('Gestão de Projetos', 'Gestão de Projetos')]
     )
     submit = SubmitField('Submit')
 
