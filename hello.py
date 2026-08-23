@@ -7,7 +7,7 @@ from wtforms import StringField, PasswordField, SelectField, SubmitField
 from wtforms.validators import DataRequired
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'you-will-never-guess'
+app.config['SECRET_KEY'] = 'uma-chave-secreta-forte-aqui'
 
 bootstrap = Bootstrap(app)
 moment = Moment(app)
@@ -16,7 +16,10 @@ class NameForm(FlaskForm):
     name = StringField('Informe o seu nome', validators=[DataRequired()])
     surname = StringField('Informe o seu sobrenome:', validators=[DataRequired()])
     institution = StringField('Informe a sua Insituição de ensino:', validators=[DataRequired()])
-    discipline = SelectField('Informe a sua disciplina:', choices=[('DSWA5', 'DSWA5'), ('GPSA5', 'GPSA5'), ('IHCA5', 'IHCA5')])
+    discipline = SelectField(
+        'Informe a sua disciplina:',
+        choices=[('DSWA5', 'DSWA5'), ('GPSA5', 'GPSA5'), ('IHCA5', 'IHCA5')]
+    )
     submit = SubmitField('Submit')
 
 class LoginForm(FlaskForm):
@@ -37,20 +40,28 @@ def index():
         session['discipline'] = form.discipline.data
         return redirect(url_for('index'))
 
+    # Obtém o IP remoto real (mesmo atrás do proxy do PythonAnywhere)
+    remote_ip = request.environ.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
+    host = request.host
+
     return render_template(
         'index.html',
         form=form,
         current_time=datetime.utcnow(),
-        remote_ip=request.remote_addr,
-        host=request.host
+        remote_ip=remote_ip,
+        host=host
     )
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        flash('Login submetido com sucesso!')
-        return redirect(url_for('index'))
+        username = form.username.data
+        return render_template(
+            'login_response.html',
+            username=username,
+            current_time=datetime.utcnow()
+        )
         
     return render_template(
         'login.html',
