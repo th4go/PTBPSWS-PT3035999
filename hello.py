@@ -68,7 +68,9 @@ def index():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.name.data).first()
         if user is None:
-            user = User(username=form.name.data)
+            # ALTERAÇÃO 1: Busca a função 'User' no banco e associa ao novo usuário
+            user_role = Role.query.filter_by(name='User').first()
+            user = User(username=form.name.data, role=user_role)
             db.session.add(user)
             db.session.commit()
             session['known'] = False
@@ -76,5 +78,10 @@ def index():
             session['known'] = True
         session['name'] = form.name.data
         return redirect(url_for('index'))
+    
+    # ALTERAÇÃO 2: Busca todos os usuários do banco para listar na tabela do HTML
+    users = User.query.all()
+    
+    # Adicionamos o 'users=users' no return para enviar os dados ao template
     return render_template('index.html', form=form, name=session.get('name'),
-                           known=session.get('known', False))
+                           known=session.get('known', False), users=users)

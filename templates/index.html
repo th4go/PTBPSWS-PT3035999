@@ -4,17 +4,32 @@
 {% block page_content %}
 <div class="page-header" style="border-bottom: 1px solid #eee; margin-top: 20px; padding-bottom: 15px;">
     <h1>
-        Olá, {% if session.get('name') %}{{ session.get('name') }} {{ session.get('surname', '') }}{% else %}Estranho{% endif %}!
+        Olá, {% if name %}{{ name }}{% else %}Stranger{% endif %}!
     </h1>
-    <h2>A sua Insituição de ensino é {% if session.get('institution') %}{{ session.get('institution') }}{% else %}None{% endif %}</h2>
-    <h2>Está cursando a disciplina de {% if session.get('discipline') %}{{ session.get('discipline') }}{% endif %}</h2>
-    <br>
-    <p>O IP do computador remoto é: {% if remote_ip %}{{ remote_ip }}{% else %}None{% endif %}</p>
-    <p>O host da aplicação é: {% if host %}{{ host }}{% else %}None{% endif %}</p>
+    <p>Prazer em conhecê-lo!</p>
 </div>
 
 <div>
     {{ wtf.quick_form(form) }}
 </div>
 
+<div style="margin-top: 40px; margin-bottom: 40px;">
+    <h2>Relação de usuários cadastrados</h2>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Nome do usuário</th>
+                <th>Função</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td>{{ u.username }}</td>
+                <td>{{ u.role.name if u.role else 'None' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
