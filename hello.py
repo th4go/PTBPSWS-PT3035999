@@ -8,6 +8,7 @@ from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from datetime import datetime
+from wtforms import StringField, SubmitField, SelectField
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -48,8 +49,12 @@ class User(db.Model):
 
 class NameForm(FlaskForm):
     name = StringField('What is your name?', validators=[DataRequired()])
+    role = SelectField(
+        'Role?:', 
+        choices=[('Administrator', 'Administrator'), ('Moderator', 'Moderator'), ('User', 'User')],
+        validators=[DataRequired()]
+    )
     submit = SubmitField('Submit')
-
 
 @app.shell_context_processor
 def make_shell_context():
@@ -71,21 +76,32 @@ def index():
     form = NameForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.name.data).first()
+        user_role = Role.query.filter_by(name=form.role.data).first()
+        
         if user is None:
-            # ALTERAÇÃO 1: Busca a função 'User' no banco e associa ao novo usuário
-            user_role = Role.query.filter_by(name='User').first()
+            # Cria o usuário com a função escolhida
             user = User(username=form.name.data, role=user_role)
             db.session.add(user)
             db.session.commit()
             session['known'] = False
         else:
+            # Se o usuário já existe, atualiza a função dele
+            user.role = user_role
+            db.session.commit()
             session['known'] = True
+            
         session['name'] = form.name.data
         return redirect(url_for('index'))
-    
-    # ALTERAÇÃO 2: Busca todos os usuários do banco para listar na tabela do HTML
+
+    # Busca todos os usuários e funções para exibir nas tabelas e contadores
     users = User.query.all()
+    roles = Role.query.all()
     
-    # Adicionamos o 'users=users' no return para enviar os dados ao template
-    return render_template('index.html', form=form, name=session.get('name'),
-                           known=session.get('known', False), users=users)
+    return render_template(
+        'index.html', 
+        form=form, 
+        name=session.get('name'), 
+        known=session.get('known', False),
+        users=users,
+        roles=roles
+    )

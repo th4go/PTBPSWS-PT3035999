@@ -13,8 +13,9 @@
     {{ wtf.quick_form(form) }}
 </div>
 
-<div style="margin-top: 40px; margin-bottom: 40px;">
+<div style="margin-top: 40px;">
     <h2>Relação de usuários cadastrados</h2>
+    <p>Quantidade: {{ users|length }}</p>
     <table class="table table-striped table-hover">
         <thead>
             <tr>
@@ -27,6 +28,33 @@
             <tr>
                 <td>{{ u.username }}</td>
                 <td>{{ u.role.name if u.role else 'None' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-top: 40px; margin-bottom: 40px;">
+    <h2>Relação de funções cadastradas</h2>
+    <p>Quantidade: {{ roles|length }}</p>
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>Funções</th>
+                <th>Usuários</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for role in roles %}
+            <tr>
+                <td>{{ role.name }}</td>
+                <td>
+                    <ol style="margin-bottom: 0; padding-left: 20px;">
+                        {% for user in role.users %}
+                            <li>{{ user.username }}</li>
+                        {% endfor %}
+                    </ol>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
