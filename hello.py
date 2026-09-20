@@ -13,14 +13,16 @@ import resend
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
-app.config['RESEND_API_KEY'] = os.environ.get('RESEND_API_KEY')
-resend.api_key = app.config['RESEND_API_KEY']
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'hard to guess string'
 app.config['SQLALCHEMY_DATABASE_URI'] =\
     'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+app.config['RESEND_API_KEY'] = os.environ.get('RESEND_API_KEY')
+resend.api_key = app.config['RESEND_API_KEY']
 
 bootstrap = Bootstrap(app)
 moment = Moment(app)
