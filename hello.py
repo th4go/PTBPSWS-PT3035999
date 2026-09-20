@@ -77,23 +77,21 @@ def internal_server_error(e):
     return render_template('500.html'), 500
 
 
-# ... (mantenha os imports, configurações do banco, Resend e classes Role/User) ...
-
 def send_notification_email(new_username):
     sender_email = os.environ.get('API_FROM', 'nao-responda@thiwink.tech') 
     
     html_content = f"""
     <h3>Novo Cadastro no Flasky</h3>
     <p><b>Usuário cadastrado:</b> {new_username}</p>
-    <p><b>Nome do aluno:</b> [DIGITE SEU NOME AQUI]</p>
-    <p><b>Prontuário:</b> [DIGITE SEU PRONTUÁRIO AQUI]</p>
+    <p><b>Nome do aluno:</b> Thiago Barbosa</p>
+    <p><b>Prontuário:</b> PT3035999 </p>
     """
     
     params = {
         "from": f"Flasky Admin <{sender_email}>",
         "to": [
-            "t426lolk@gmail.com", # E-mail de teste temporário
-            "seu.email.institucional@aluno.ifsp.edu.br" 
+            "flaskaulasweb@zohomail.com",
+            "thiago.barbosa1@aluno.ifsp.edu.br" 
         ],
         "subject": "[Flasky] Novo usuário cadastrado",
         "html": html_content,
