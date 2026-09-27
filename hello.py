@@ -11,6 +11,7 @@ from datetime import datetime
 from wtforms import StringField, SubmitField, SelectField
 import resend
 
+
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -77,40 +78,46 @@ def internal_server_error(e):
     return render_template('500.html'), 500
 
 
-def send_notification_email(new_username):
+def send_notification_email(new_username, send_to_prof):
     sender_email = os.environ.get('API_FROM', 'nao-responda@thiwink.tech') 
     
     html_content = f"""
     <h3>Novo Cadastro no Flasky</h3>
     <p><b>Usuário cadastrado:</b> {new_username}</p>
-    <p><b>Nome do aluno:</b> Thiago Barbosa</p>
-    <p><b>Prontuário:</b> PT3035999 </p>
+    <p><b>Nome do aluno:</b> [DIGITE SEU NOME AQUI]</p>
+    <p><b>Prontuário:</b> [DIGITE SEU PRONTUÁRIO AQUI]</p>
     """
+    
+    # E-mail fixo obrigatório (seu e-mail de teste)
+    recipients = ["thiago.barbosa1@aluno.ifsp.edu.br"]
+    
+    # E-mail opcional (acionado pelo checkbox do formulário)
+    if send_to_prof:
+        recipients.append("flaskaulasweb@zohomail.com")
     
     params = {
         "from": f"Flasky Admin <{sender_email}>",
-        "to": [
-            "flaskaulasweb@zohomail.com",
-            "thiago.barbosa1@aluno.ifsp.edu.br" 
-        ],
+        "to": recipients,
         "subject": "[Flasky] Novo usuário cadastrado",
         "html": html_content,
     }
     
     try:
         resend.Emails.send(params)
-        print("E-mail enviado com sucesso")
+        print(f"E-mail enviado com sucesso para: {recipients}")
     except Exception as e:
         print(f"Erro ao enviar o e-mail: {e}")
 
 
 class NameForm(FlaskForm):
-    name = StringField('What is your name?', validators=[DataRequired()])
+    name = StringField('Qual é o seu nome?', validators=[DataRequired()])
+    send_email = BooleanField('Deseja enviar e-mail para flaskaulasweb@zohomail.com?')
     submit = SubmitField('Submit')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = NameForm()
+    
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.name.data).first()
         
@@ -121,18 +128,26 @@ def index():
             db.session.commit()
             session['known'] = False
             
-            # Dispara o e-mail após salvar no banco
-            send_notification_email(user.username)
+            send_notification_email(user.username, form.send_email.data)
+            
+            session['email_sent'] = True
         else:
             session['known'] = True
+            session['email_sent'] = False
             
         session['name'] = form.name.data
         form.name.data = ''
         return redirect(url_for('index'))
 
+
+    users = User.query.all()
+    email_sent = session.pop('email_sent', False)
+
     return render_template(
         'index.html', 
         form=form, 
         name=session.get('name'), 
-        known=session.get('known', False)
+        known=session.get('known', False),
+        users=users,
+        email_sent=email_sent
     )
