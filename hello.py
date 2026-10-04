@@ -63,6 +63,15 @@ class NameForm(FlaskForm):
     )
     submit = SubmitField('Submit')
 
+class Email(db.Model):
+    __tablename__ = 'emails'
+    id = db.Column(db.Integer, primary_key=True)
+    sender_name = db.Column(db.String(64))
+    recipients = db.Column(db.String(256))
+    subject = db.Column(db.String(128))
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
 @app.shell_context_processor
 def make_shell_context():
     return dict(db=db, User=User, Role=Role)
@@ -84,16 +93,17 @@ def send_notification_email(new_username, send_to_prof):
     html_content = f"""
     <h3>Novo Cadastro no Flasky</h3>
     <p><b>Usuário cadastrado:</b> {new_username}</p>
-    <p><b>Nome do aluno:</b> Thiago Barbosa</p>
-    <p><b>Prontuário:</b> PT3035999</p>
+    <p><b>Nome do aluno:</b>THIAGO BARBOSA</p>
+    <p><b>Prontuário:</b>PT3035999</p>
     """
     
-    # E-mail fixo obrigatório (seu e-mail de teste)
+
     recipients = ["thiago.barbosa1@aluno.ifsp.edu.br"]
-    
-    # E-mail opcional (acionado pelo checkbox do formulário)
+
     if send_to_prof:
         recipients.append("flaskaulasweb@zohomail.com")
+        
+    recipients_str = ",\n".join([f"'{email}'" for email in recipients])
     
     params = {
         "from": f"Flasky Admin <{sender_email}>",
@@ -105,6 +115,17 @@ def send_notification_email(new_username, send_to_prof):
     try:
         resend.Emails.send(params)
         print(f"E-mail enviado com sucesso para: {recipients}")
+        
+        # Criação do registro no banco de dados
+        email_log = Email(
+            sender_name=new_username,
+            recipients=recipients_str,
+            subject="[Flasky] Novo usuário",
+            body=f"Novo usuário cadastrado: {new_username}"
+        )
+        db.session.add(email_log)
+        db.session.commit()
+        
     except Exception as e:
         print(f"Erro ao enviar o e-mail: {e}")
 
@@ -151,3 +172,8 @@ def index():
         users=users,
         email_sent=email_sent
     )
+
+@app.route('/emailsEnviados')
+def emails_enviados():
+    emails = Email.query.order_by(Email.timestamp.desc()).all()
+    return render_template('emails.html', emails=emails)
