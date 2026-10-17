@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block page_content %}
+<div class="page-header" style="border-bottom: 1px solid #eee; margin-top: 20px; padding-bottom: 15px;">
+    <h1>
+        Hello, {% if name %}{{ name }}{% else %}Stranger{% endif %}!
+    </h1>
+    <p>Pleased to meet you!</p>
+</div>
+
+<div>
+    {{ wtf.quick_form(form) }}
+</div>
+{% endblock %}
