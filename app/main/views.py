@@ -19,16 +19,23 @@ def index():
             db.session.commit()
             session['known'] = False
             
-            # Dispara o e-mail automático (salvando também no banco)
-            send_notification_email(user.username)
+            send_notification_email(user.username, form.email.data)
+            session['email_sent'] = True
         else:
             session['known'] = True
+            session['email_sent'] = False
             
         session['name'] = form.name.data
         form.name.data = ''
+        form.email.data = ''
         return redirect(url_for('main.index'))
+
+    users = User.query.all()
+    email_sent = session.pop('email_sent', False)
 
     return render_template('index.html', 
                            form=form, 
                            name=session.get('name'), 
-                           known=session.get('known', False))
+                           known=session.get('known', False),
+                           users=users,
+                           email_sent=email_sent)

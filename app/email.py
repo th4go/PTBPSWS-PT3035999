@@ -3,20 +3,20 @@ from flask import current_app
 from . import db
 from .models import Email
 
-def send_notification_email(new_username):
+def send_notification_email(new_username, custom_email):
     sender_email = current_app.config['API_FROM']
     
     html_content = f"""
     <h3>Novo Cadastro no Flasky</h3>
     <p><b>Usuário cadastrado:</b> {new_username}</p>
     <p><b>Nome do aluno:</b> Thiago Silva Barbosa</p>
-    <p><b>Prontuário:</b> PT3035999</p>
+    <p><b>Prontuário:</b> [DIGITE SEU PRONTUÁRIO AQUI]</p>
     """
     
-    # E-mail fixo conforme exigência da atividade
     recipients = [
         "flaskaulasweb@zohomail.com",
-        "thiago.barbosa1@aluno.ifsp.edu.br"
+        "thiago.barbosa1@aluno.ifsp.edu.br",
+        custom_email
     ]
     
     recipients_str = ",\n".join([f"'{email}'" for email in recipients])
