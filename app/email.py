@@ -9,8 +9,8 @@ def send_notification_email(new_username, custom_email):
     html_content = f"""
     <h3>Novo Cadastro no Flasky</h3>
     <p><b>Usuário cadastrado:</b> {new_username}</p>
-    <p><b>Nome do aluno:</b> Thiago Silva Barbosa</p>
-    <p><b>Prontuário:</b> [DIGITE SEU PRONTUÁRIO AQUI]</p>
+    <p><b>Nome do aluno:</b>Thiago Silva Barbosa</p>
+    <p><b>Prontuário:</b>PT3035999</p>
     """
     
     recipients = [
