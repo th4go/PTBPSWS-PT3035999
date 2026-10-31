@@ -24,16 +24,48 @@
             <tr>
                 <th>Nome do usuário</th>
                 <th>Função</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
             {% for u in users %}
             <tr>
-                <td>{{ u.username }}</td>
-                <td>{{ u.role.name if u.role else 'None' }}</td>
+                <td>
+                    <span id="display-name-{{ u.id }}">{{ u.username }}</span>
+                    <form id="edit-form-{{ u.id }}" action="{{ url_for('main.edit_user', id=u.id) }}" method="POST" style="display: none;" class="form-inline">
+                        <input type="text" name="new_name" value="{{ u.username }}" class="form-control input-sm" style="width: 200px;">
+                        <button type="button" class="btn btn-default btn-sm" onclick="toggleEdit({{ u.id }})">Cancelar</button>
+                        <button type="submit" class="btn btn-primary btn-sm">Salvar</button>
+                    </form>
+                    <button id="edit-btn-{{ u.id }}" class="btn btn-default btn-xs" style="margin-left: 10px;" onclick="toggleEdit({{ u.id }})">Editar</button>
+                </td>
+                <td style="vertical-align: middle;">{{ u.role.name if u.role else 'None' }}</td>
+                <td style="text-align: right; vertical-align: middle;">
+                    <form action="{{ url_for('main.delete_user', id=u.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-xs">Excluir</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<script>
+function toggleEdit(userId) {
+    var displaySpan = document.getElementById('display-name-' + userId);
+    var editForm = document.getElementById('edit-form-' + userId);
+    var editBtn = document.getElementById('edit-btn-' + userId);
+
+    if (editForm.style.display === 'none') {
+        displaySpan.style.display = 'none';
+        editBtn.style.display = 'none';
+        editForm.style.display = 'inline-block';
+    } else {
+        displaySpan.style.display = 'inline';
+        editBtn.style.display = 'inline-block';
+        editForm.style.display = 'none';
+    }
+}
+</script>
 {% endblock %}

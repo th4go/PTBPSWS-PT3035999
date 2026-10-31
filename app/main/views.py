@@ -39,3 +39,21 @@ def index():
                            known=session.get('known', False),
                            users=users,
                            email_sent=email_sent)
+
+@main.route('/delete/<int:id>', methods=['POST'])
+def delete_user(id):
+    user = User.query.get_or_404(id)
+    db.session.delete(user)
+    db.session.commit()
+    flash('Usuário removido com sucesso.', 'warning')
+    return redirect(url_for('main.index'))
+
+@main.route('/edit/<int:id>', methods=['POST'])
+def edit_user(id):
+    user = User.query.get_or_404(id)
+    new_name = request.form.get('new_name')
+    if new_name:
+        user.username = new_name
+        db.session.commit()
+        flash('Nome do usuário atualizado com sucesso.', 'success')
+    return redirect(url_for('main.index'))
