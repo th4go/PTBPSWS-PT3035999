@@ -1,5 +1,5 @@
 import resend
-from flask import current_app
+from flask import current_app, render_template
 from . import db
 from .models import Email
 
