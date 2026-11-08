@@ -67,21 +67,18 @@ def confirm(token):
         return redirect(url_for('main.index'))
     if current_user.confirm(token):
         db.session.commit()
-        flash('Você confirmou sua conta! Obrigado.', 'success')
+        flash('You have confirmed your account. Thanks!', 'success')
     else:
-        flash('O link de confirmação é inválido ou expirou.', 'danger')
+        flash('The confirmation link is invalid or has expired.', 'danger')
     return redirect(url_for('main.index'))
 
 @auth.route('/confirm')
 @login_required
 def resend_confirmation():
     token = current_user.generate_confirmation_token()
-    
-    # Reenvio pelo Resend
-    send_auth_email(current_user.email, 'Confirme sua conta',
+    send_auth_email(current_user.email, 'Confirm Your Account',
                     'auth/email/confirm', user=current_user, token=token)
-    
-    flash('Um novo e-mail de confirmação foi enviado.', 'info')
+    flash('A new confirmation email has been sent to you by email.', 'info')
     return redirect(url_for('main.index'))
 
 @auth.route('/reset', methods=['GET', 'POST'])
