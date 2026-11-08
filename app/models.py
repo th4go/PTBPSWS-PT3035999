@@ -47,6 +47,24 @@ class User(UserMixin, db.Model):
         db.session.add(self)
         return True
 
+    def generate_reset_token(self):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        return s.dumps({'reset': self.id})
+
+    @staticmethod
+    def reset_password(token, new_password, max_age=3600):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token, max_age=max_age)
+        except:
+            return False
+        user = User.query.get(data.get('reset'))
+        if user is None:
+            return False
+        user.password = new_password
+        db.session.add(user)
+        return True
+
 class Email(db.Model):
     __tablename__ = 'emails'
     id = db.Column(db.Integer, primary_key=True)
