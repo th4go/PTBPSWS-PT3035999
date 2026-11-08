@@ -42,3 +42,22 @@ def send_notification_email(new_username, custom_email):
         db.session.commit()
     except Exception as e:
         print(f"Erro ao enviar o e-mail: {e}")
+
+def send_auth_email(to, subject, template, **kwargs):
+    sender_email = current_app.config['API_FROM']
+    
+    # O Flask renderiza o template HTML da pasta do professor injetando as variáveis (como o token)
+    html_content = render_template(template + '.html', **kwargs)
+    
+    params = {
+        "from": f"Flasky Admin <{sender_email}>",
+        "to": [to],
+        "subject": f"[Flasky] {subject}",
+        "html": html_content,
+    }
+    
+    try:
+        resend.Emails.send(params)
+        print(f"E-mail de autenticação enviado com sucesso para: {to}")
+    except Exception as e:
+        print(f"Erro ao enviar o e-mail de autenticação: {e}")
