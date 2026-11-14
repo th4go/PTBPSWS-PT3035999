@@ -3,8 +3,8 @@ from flask_login import login_user, logout_user, login_required, current_user
 from . import auth
 from .. import db
 from ..models import User
-from ..email import send_auth_email # <--- Importando a nossa função do Resend
-from .forms import LoginForm, RegistrationForm, PasswordResetRequestForm, PasswordResetForm
+from ..email import send_auth_email
+from .forms import LoginForm, RegistrationForm, PasswordResetRequestForm, PasswordResetForm, ChangePasswordForm, ChangeEmailForm
 
 @auth.before_app_request
 def before_request():
@@ -111,3 +111,43 @@ def password_reset(token):
         else:
             return redirect(url_for('main.index'))
     return render_template('auth/reset_password.html', form=form)
+
+@auth.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.old_password.data):
+            current_user.password = form.password.data
+            db.session.add(current_user)
+            db.session.commit()
+            flash('Sua senha foi atualizada com sucesso.', 'success')
+            return redirect(url_for('main.index'))
+        else:
+            flash('Senha atual incorreta.', 'danger')
+    return render_template("auth/change_password.html", form=form)
+
+@auth.route('/change_email', methods=['GET', 'POST'])
+@login_required
+def change_email_request():
+    form = ChangeEmailForm()
+    if form.validate_on_submit():
+        new_email = form.email.data.lower()
+        token = current_user.generate_email_change_token(new_email)
+        # Disparo pelo Resend
+        send_auth_email(new_email, 'Confirme seu novo endereço de e-mail',
+                        'auth/email/change_email',
+                        user=current_user, token=token)
+        flash('Um e-mail com instruções para confirmar seu novo e-mail foi enviado.', 'info')
+        return redirect(url_for('main.index'))
+    return render_template("auth/change_email.html", form=form)
+
+@auth.route('/change_email/<token>')
+@login_required
+def change_email(token):
+    if current_user.change_email(token):
+        db.session.commit()
+        flash('Seu endereço de e-mail foi atualizado.', 'success')
+    else:
+        flash('Link inválido ou expirado.', 'danger')
+    return redirect(url_for('main.index'))
